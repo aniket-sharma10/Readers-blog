@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.ql-editor{
+    font-size: 1.05rem;
+}
+
+.content-class p{
+    margin-bottom: 0.5rem;
+}
+
+.content-class h1{
+    font-size: 1.6rem;
+    font-weight: 600;
+    font-family: sans-serif;
+    margin: 1.05rem 0;
+}
+
+.content-class h2{
+    font-size: 1.5rem;
+    font-weight: 500;
+    font-family: sans-serif;
+    margin: 1.05rem 0;
+}
+
+.content-class a{
+    color: rgb(79, 149, 199);
+}
+.content-class a:hover{
+    text-decoration:  underline;
+}
