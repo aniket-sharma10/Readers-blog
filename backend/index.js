@@ -32,7 +32,7 @@ app.use('/api/comment', commentRoute)
 app.use(express.static(path.join(dirname, '/frontend/dist')))
 
 app.get('*', (req, res) => {
-    res.sendFile(path.join(dirname, '/frontend/dist/index.html'))
+    res.sendFile(path.join(dirname, 'frontend', 'dist', 'index.html'))
 })
 
 // middlewares
