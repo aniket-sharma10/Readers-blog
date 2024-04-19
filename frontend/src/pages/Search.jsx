@@ -7,7 +7,7 @@ function Search() {
   const [sidebar, setSidebar] = useState({
     search: "",
     sort: "desc",
-    category: "uncategorized",
+    category: "",
   });
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -24,8 +24,8 @@ function Search() {
       setSidebar({
         ...sidebar,
         search: searchTerm,
-        sort: sortTerm,
-        category: categoryTerm,
+        sort: sortTerm || 'desc',
+        category: categoryTerm || '',
       });
     }
 
@@ -49,16 +49,10 @@ function Search() {
   }, [location.search]);
 
   const handleChange = (e) => {
-    if(e.target.id === 'search'){
-        setSidebar({...sidebar, search: e.target.value})
-    }
-    if(e.target.id === 'sort'){
-        const order = e.target.value || 'desc'
-        setSidebar({...sidebar, sort: order})
-    }
-    if(e.target.id === 'category'){
-        const category = e.target.value || 'uncategorized'
-        setSidebar({...sidebar, category: category})
+    if (e.target.value === "") {
+      setSidebar({ ...sidebar, [e.target.id]: "" }); 
+    } else {
+      setSidebar({ ...sidebar, [e.target.id]: e.target.value });
     }
   }
 
@@ -135,7 +129,7 @@ function Search() {
             )
           }
           {
-            posts && posts.length>0 && posts.map((post) => (
+            !loading && posts && posts.length>0 && posts.map((post) => (
               <PostCard key={post._id} post={post} />
             ))
           }

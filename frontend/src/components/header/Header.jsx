@@ -29,6 +29,12 @@ function Header() {
     setSearch(searchTerm);
   }, [location.search]);
 
+  useEffect(() => {
+    if(location.pathname === '/'){
+      setSearch('')
+    }
+  }, [location.pathname])
+
   const handleSignout = async () => {
     try {
       const res = await fetch("/api/user/signout", {
@@ -48,10 +54,12 @@ function Header() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const urlParams = new URLSearchParams(location.search);
-    urlParams.set("search", search);
-    const searchTerm = urlParams.toString();
-    navigate(`/search?${searchTerm}`);
+    if (search.trim() !== "") {
+      const urlParams = new URLSearchParams(location.search);
+      urlParams.set("search", search);
+      const searchTerm = urlParams.toString();
+      navigate(`/search?${searchTerm}`);
+    }
   };
 
   return (
@@ -66,18 +74,15 @@ function Header() {
           type="text"
           placeholder="Search.."
           rightIcon={AiOutlineSearch}
-          className="hidden lg:inline-block"
+          className="w-24 sm:w-full lg:inline-block"
           value={search}
+          required
           onChange={(e) => setSearch(e.target.value)}
         />
       </form>
-      <ButtonGroup className="lg:hidden py-2 border-2 px-2 rounded-lg">
-        <AiOutlineSearch className="w-6 h-6" />
-      </ButtonGroup>
-
       <div className="flex gap-2 md:order-2">
         <Button
-          className="w-12 h-10 hidden sm:inline-block border-2"
+          className="w-12 h-10 inline-block border-2"
           color="gray"
           pill
           onClick={() => dispatch(toggleTheme())}

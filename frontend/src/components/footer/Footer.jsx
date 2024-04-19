@@ -1,7 +1,7 @@
 import React from "react";
 import { Footer } from "flowbite-react";
 import { Link } from "react-router-dom";
-import { BsDribbble, BsFacebook, BsGithub, BsInstagram, BsTwitter } from "react-icons/bs";
+import { BsFacebook, BsGithub, BsInstagram, BsTwitter } from "react-icons/bs";
 
 function Footerr() {
   return (
@@ -20,7 +20,7 @@ function Footerr() {
               <Footer.Title title="About" />
               <Footer.LinkGroup col>
                 <Footer.Link href="/" target="_blank" rel="noopener noreferrer">Blogs</Footer.Link>
-                <Footer.Link href="/" target="_blank" rel="noopener noreferrer">Tailwind CSS</Footer.Link>
+                <Footer.Link href="https://tailwindcss.com/docs/installation" target="_blank" rel="noopener noreferrer">Tailwind CSS</Footer.Link>
               </Footer.LinkGroup>
             </div>
             <div>
