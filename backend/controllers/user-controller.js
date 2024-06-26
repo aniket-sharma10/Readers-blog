@@ -1,6 +1,7 @@
 const User = require('../models/user-model')
 const { StatusCodes } = require('http-status-codes')
 const { UnauthenticatedError, BadRequestError, NotFoundError } = require("../errors")
+const bcryptjs = require('bcryptjs')
 
 const test = (req, res) => {
     res.json({ msg: 'Test router working' })
@@ -14,6 +15,7 @@ const updateUser = async (req, res) => {
         if (req.body.password.length < 6) {
             throw new BadRequestError('Password length must be atleast 6 characters')
         }
+        req.body.password = bcryptjs.hashSync(req.body.password, 10);
     }
     if (req.body.username) {
         const username = req.body.username;
