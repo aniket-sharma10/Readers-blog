@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Modal, Table, Button } from "flowbite-react";
+import { Modal, Table, Button, Spinner } from "flowbite-react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
 import { LuShieldCheck, LuShieldClose } from "react-icons/lu";
@@ -11,9 +11,11 @@ function DashUsers() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUsers = async () => {
+      setLoading(true);
       try {
         const res = await fetch(`/api/user/getusers`);
         const data = await res.json();
@@ -26,6 +28,8 @@ function DashUsers() {
         }
       } catch (error) {
         console.log(error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -35,11 +39,10 @@ function DashUsers() {
   }, [currentUser._id]);
 
   const handleShowMore = async () => {
+    setLoading(true);
     const start = users.length;
     try {
-      const res = await fetch(
-        `/api/user/getusers?start=${start}`
-      );
+      const res = await fetch(`/api/user/getusers?start=${start}`);
       const data = await res.json();
       if (res.ok) {
         setUsers((prev) => [...prev, ...data.userRes]);
@@ -49,24 +52,22 @@ function DashUsers() {
       }
     } catch (error) {
       console.log(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDeleteUser = async () => {
     setShowModal(false);
     try {
-      const res = await fetch(
-        `/api/user/delete/${userId}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const res = await fetch(`/api/user/delete/${userId}`, {
+        method: "DELETE",
+      });
       const data = await res.json();
       if (res.ok) {
         setUsers((prev) => prev.filter((user) => user._id !== userId));
-      }
-      else {
-        console.log(data.msg)
+      } else {
+        console.log(data.msg);
       }
     } catch (error) {
       console.log(error.message);
@@ -75,7 +76,12 @@ function DashUsers() {
 
   return (
     <div className="overflow-x-scroll w-full table-auto md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
-      {currentUser.isAdmin && users.length > 0 ? (
+        {loading ? (
+        <div className="flex justify-center items-center h-60 gap-2 text-lg">
+          <Spinner />
+          <p>Loading..</p>
+        </div>
+      ) : currentUser.isAdmin && users.length > 0 ? (
         <>
           <Table hoverable>
             <Table.Head>

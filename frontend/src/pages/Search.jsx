@@ -106,7 +106,7 @@ function Search() {
           <div className="flex items-center gap-2">
             <label className="font-semibold">Category</label>
             <Select id="category" onChange={handleChange} value={sidebar.category}>
-                <option value='uncategorized'>Uncategorized</option>
+                <option value=''>Uncategorized</option>
                 <option value='reactjs'>ReactJs</option>
                 <option value='javascript'>JavaScript</option>
                 <option value='nextjs'>NextJs</option>

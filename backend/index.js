@@ -1,13 +1,13 @@
 const express = require('express')
-const app = express()
-require('express-async-errors')
+const path = require('path')
 const connectDB = require('./db/connect')
 require('dotenv').config()
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
-const path = require('path')
+require('express-async-errors')
 
-const dirname = path.resolve()
+// const __dirname = path.resolve();
+const app = express()
 
 app.use(cors())
 app.use(express.json())
@@ -29,11 +29,12 @@ app.use('/api/auth', authRoute)
 app.use('/api/post', postRoute)
 app.use('/api/comment', commentRoute)
 
-app.use(express.static(path.join(dirname, '/frontend/dist')))
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
 app.get('*', (req, res) => {
-    res.sendFile(path.join(dirname, 'frontend', 'dist', 'index.html'))
-})
+    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+});
+
 
 // middlewares
 app.use(notFoundMiddleware);

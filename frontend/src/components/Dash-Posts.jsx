@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Modal, Table, Button } from "flowbite-react";
+import { Modal, Table, Button, Spinner } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 
@@ -10,11 +10,13 @@ function DashPosts() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [postId, setPostId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [initialLoad, setInitialLoad] = useState(true);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await fetch(`/api/post/getposts?userId=${currentUser._id}`);
+        const res = await fetch(`/api/post/dashboard/getposts?userId=${currentUser._id}`);
         const data = await res.json();
 
         if (res.ok) {
@@ -25,15 +27,17 @@ function DashPosts() {
         }
       } catch (error) {
         console.log(error.message);
+      } finally {
+        setLoading(false);
+        setInitialLoad(false);
       }
     };
 
-    if (currentUser.isAdmin) {
-      fetchPosts();
-    }
+    fetchPosts();
   }, [currentUser._id]);
 
   const handleShowMore = async () => {
+    setLoading(true);
     const start = userPosts.length;
     try {
       const res = await fetch(
@@ -48,6 +52,8 @@ function DashPosts() {
       }
     } catch (error) {
       console.log(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -63,18 +69,26 @@ function DashPosts() {
       const data = await res.json();
       if (res.ok) {
         setUserPosts((prev) => prev.filter((post) => post._id !== postId));
-      }
-      else {
-        console.log(data.msg)
+      } else {
+        console.log(data.msg);
       }
     } catch (error) {
       console.log(error.message);
     }
   };
 
+  if (loading && initialLoad) {
+    return (
+      <div className="flex justify-center items-center w-full h-60 gap-2 text-lg">
+        <Spinner />
+        <p>Loading..</p>
+      </div>
+    );
+  }
+
   return (
     <div className="overflow-x-scroll w-full table-auto md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
-      {currentUser.isAdmin && userPosts.length > 0 ? (
+      {userPosts.length > 0 ? (
         <>
           <Table hoverable>
             <Table.Head>
@@ -83,9 +97,7 @@ function DashPosts() {
               <Table.HeadCell>Post title</Table.HeadCell>
               <Table.HeadCell>Category</Table.HeadCell>
               <Table.HeadCell>Delete</Table.HeadCell>
-              <Table.HeadCell>
-                <span>Edit</span>
-              </Table.HeadCell>
+              <Table.HeadCell>Edit</Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
               {userPosts.map((post) => (
@@ -149,9 +161,11 @@ function DashPosts() {
           )}
         </>
       ) : (
-        <h2 className="text-center py-16 text-xl sm:text-3xl md:text-4xl">
-          You have 0 posts!!
-        </h2>
+        !loading && (
+          <h2 className="text-center py-16 text-xl sm:text-3xl md:text-4xl">
+            You have 0 posts!!
+          </h2>
+        )
       )}
       <Modal
         show={showModal}

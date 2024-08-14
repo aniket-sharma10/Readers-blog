@@ -107,6 +107,10 @@ function Header() {
               <Dropdown.Item>Profile</Dropdown.Item>
             </Link>
             <Dropdown.Divider />
+            <Link to={"/create-post"}>
+              <Dropdown.Item>Create Post</Dropdown.Item>
+            </Link>
+            <Dropdown.Divider />
             <Dropdown.Item onClick={handleSignout}>Sign Out</Dropdown.Item>
           </Dropdown>
         ) : (

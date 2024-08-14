@@ -70,14 +70,14 @@ function DashSidebar() {
               Profile
             </Sidebar.Item>
           </Link>
-          {currentUser.isAdmin && (
+          {currentUser && (
             <Link to={"/dashboard?tab=posts"}>
               <Sidebar.Item
                 active={tab === "posts"}
                 icon={HiDocumentText}
                 as="div"
               >
-                Posts
+                {currentUser.isAdmin ? 'All Posts' : 'My Posts'}
               </Sidebar.Item>
             </Link>
           )}

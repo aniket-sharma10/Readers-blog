@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Modal, Table, Button } from "flowbite-react";
+import { Modal, Table, Button, Spinner } from "flowbite-react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
-import { LuShieldCheck, LuShieldClose } from "react-icons/lu";
 
 function DashComments() {
   const { currentUser } = useSelector((state) => state.user);
@@ -11,6 +10,8 @@ function DashComments() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [commentId, setCommentId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [initialLoad, setInitialLoad] = useState(true);
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -26,6 +27,9 @@ function DashComments() {
         }
       } catch (error) {
         console.log(error.message);
+      } finally {
+        setLoading(false);
+        setInitialLoad(false);
       }
     };
 
@@ -35,6 +39,7 @@ function DashComments() {
   }, [currentUser._id]);
 
   const handleShowMore = async () => {
+    setLoading(true);
     const start = comments.length;
     try {
       const res = await fetch(`/api/comment/getAllComments?start=${start}`);
@@ -47,6 +52,8 @@ function DashComments() {
       }
     } catch (error) {
       console.log(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -68,6 +75,15 @@ function DashComments() {
       console.log(error.message);
     }
   };
+
+  if (loading && initialLoad) {
+    return (
+      <div className="flex justify-center items-center w-full h-60 gap-2 text-lg">
+        <Spinner />
+        <p>Loading..</p>
+      </div>
+    );
+  }
 
   return (
     <div className="overflow-x-scroll w-full table-auto md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
@@ -129,9 +145,11 @@ function DashComments() {
           )}
         </>
       ) : (
-        <h2 className="text-center py-16 text-xl sm:text-3xl md:text-4xl">
-          You have no comments yet
-        </h2>
+        !loading && (
+          <h2 className="text-center py-16 text-xl sm:text-3xl md:text-4xl">
+            You have no comments yet
+          </h2>
+        )
       )}
       <Modal
         show={showModal}

@@ -21,7 +21,8 @@ function Home() {
 
   return (
     <div>
-      <div className="flex flex-col gap-6 px-3 p-28 max-w-6xl mx-auto">
+      
+      <div className="flex flex-col gap-6 px-3 p-20 max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold lg:text-6xl">Welcome to Readers</h1>
         <p className="text-gray-500 text-sm">
           Here you will find all types of tech related articles.
@@ -38,12 +39,9 @@ function Home() {
             to="/signin"
             className="text-xs sm:text-sm text-teal-500 font-semibold hover:underline"
           >
-            Please sign in to view posts
+            Please sign in to create post
           </Link>
         )}
-      </div>
-      <div className="p-3 bg-amber-50 dark:bg-slate-700">
-        <CallToAction />
       </div>
 
       <div className="max-w-6xl mx-auto p-3 flex flex-col gap-8 py-7">
@@ -63,6 +61,10 @@ function Home() {
             </Link>
           </div>
         )}
+      </div>
+
+      <div className="p-3 bg-amber-50 dark:bg-slate-700">
+        <CallToAction />
       </div>
     </div>
   );

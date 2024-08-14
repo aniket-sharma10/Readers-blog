@@ -11,6 +11,7 @@ function PostPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [recentPosts, setRecentPosts] = useState(null)
+  const [writer, setWriter] = useState("")
 
   useEffect(() => {
     const getPost = async () => {
@@ -21,6 +22,18 @@ function PostPage() {
 
         if (res.ok) {
           setPost(data.posts[0]);
+          // console.log(data)
+          // console.log(data.posts)
+
+          if(data.posts[0].userId){
+            const userRes = await fetch(`/api/user/${data.posts[0].userId}`)
+            const userData = await userRes.json()
+
+            if(userRes.ok){
+              setWriter(userData.username)
+            }
+          }
+
           setLoading(false);
           setError(null);
         } else {
@@ -88,7 +101,10 @@ function PostPage() {
         className="w-full max-w-5xl max-h-[600px] object-cover mt-10 p-3 mx-auto"
       />
       <div className="w-full max-w-2xl mx-auto p-3 flex justify-between border-b border-slate-500 text-xs">
+        <div className="flex flex-col gap-2">
+        <span>By: {post && writer}</span>
         <span>{post && new Date(post.updatedAt).toLocaleDateString()}</span>
+        </div>
         <span>{post && (post.content.length / 1000).toFixed(0)} mins read</span>
       </div>
       <div

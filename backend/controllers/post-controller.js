@@ -3,8 +3,8 @@ const { StatusCodes } = require('http-status-codes')
 const { UnauthenticatedError, BadRequestError } = require('../errors')
 
 const create = async (req, res) => {
-    if (!req.user.isAdmin) {
-        throw new UnauthenticatedError('You are not allowed to create a post')
+    if (!req.user.userId) {
+        throw new UnauthenticatedError('Please login to create a post!')
     }
     if (!req.body.title || !req.body.content) {
         throw new BadRequestError('Please provide all required fields')
@@ -40,8 +40,43 @@ const getposts = async (req, res) => {
     res.status(StatusCodes.OK).json({posts, totalPosts, lastMonthPosts})
 }
 
+const getDashboardPosts = async (req, res) => {
+    if (!req.user) {
+        throw new UnauthenticatedError('Authentication required');
+    }
+
+    const startIndex = parseInt(req.query.start || 0);
+    const limit = parseInt(req.query.limit || 9);
+    const sortDirection = req.query.sort === 'asc' ? 1 : -1;
+
+    const query = {
+        ...(req.query.category && { category: req.query.category }),
+        ...(req.query.slug && { slug: req.query.slug }),
+        ...(req.query.search && {
+            $or: [
+                { title: { $regex: req.query.search, $options: 'i' } },
+                { content: { $regex: req.query.search, $options: 'i' } }
+            ]
+        })
+    };
+
+    if (!req.user.isAdmin) {
+        query.userId = req.query.userId;  // Non-admins see only their posts
+    }
+
+    const posts = await Post.find(query)
+        .sort({ updatedAt: sortDirection })
+        .skip(startIndex)
+        .limit(limit);
+
+    const totalPosts = await Post.countDocuments(query);
+
+    res.status(StatusCodes.OK).json({ posts, totalPosts });
+};
+
+
 const deletepost = async(req, res) => {
-    if(!req.user.isAdmin || req.user.userId !== req.params.userId){
+    if(!req.user.isAdmin && req.user.userId !== req.params.userId){
         throw new UnauthenticatedError('You are not authorized to delete this post')
     }
     await Post.findByIdAndDelete(req.params.postId)
@@ -49,7 +84,7 @@ const deletepost = async(req, res) => {
 }
 
 const updatepost = async(req, res) => {
-    if(!req.user.isAdmin || req.user.userId !== req.params.userId){
+    if(!req.user.isAdmin && req.user.userId !== req.params.userId){
         throw new UnauthenticatedError('You are not authorized to edit this post')
     }
 
@@ -62,4 +97,4 @@ const updatepost = async(req, res) => {
     res.status(StatusCodes.OK).json(updatedPost)
 }
 
-module.exports = { create, getposts, deletepost, updatepost }
+module.exports = { create, getposts, getDashboardPosts,deletepost, updatepost }
